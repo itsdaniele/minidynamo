@@ -45,6 +45,8 @@ Capturing a graph of tensor operations from a Python function is hard. PyTorch w
 
 ### Calling `torch.compile`
 
+[Play the interactive walkthrough: first call, cache hit, and recompilation.](https://danielep.xyz/blog/2026/minidynamo-torch-compile/#compile-walkthrough)
+
 <figure class="minidynamo-figure">
   <picture>
     <source media="(max-width: 700px)" srcset="assets/pipeline-mobile.svg">
