@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Local console logs; publication trials are kept as JSON.
+benchmarks/*.log
+
+# Local environments and build/test artifacts.
+.venv/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/

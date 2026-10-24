@@ -1,0 +1,30 @@
+/home/daniele.paliotta/minidynamo/.venv/lib/python3.10/site-packages/torch/_subclasses/functional_tensor.py:283: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:84.)
+  cpu = _conversion_method_template(device=torch.device("cpu"))
+==============================================================================
+Transformer Ops Fusion: Eager vs minidynamo vs torch.compile [cuda]
+Tensor size: (512, 768) -- GPT-2 small dimensions
+All runs use torch.inference_mode() (no autograd overhead)
+==============================================================================
+
+  Pattern                         Eager   mini+Ind  torch.compile  mini spd    tc spd
+  -------------------------- ---------- ---------- -------------- --------- ---------
+  GELU (8 ops)                   40.6us     25.3us         33.6us     1.60x     1.21x
+  SiLU (2 ops)                    8.9us     24.3us         32.2us     0.36x     0.28x
+  Whole-tensor RMS norm          27.4us     41.4us         52.9us     0.66x     0.52x
+  Whole-tensor softmax           31.2us     59.4us         70.1us     0.52x     0.45x
+  Residual+GELU (9 ops)          44.8us     30.6us         33.9us     1.47x     1.32x
+
+==============================================================================
+ANALYSIS
+==============================================================================
+
+  mini+Inductor and torch.compile use the same Inductor backend, and the
+  parity tests check that minidynamo can feed equivalent graphs into that
+  narrow path. When these rows speed up, the win comes from Inductor's
+  lowering and fusion work, not from our graph capture.
+
+  The two paths have different guards, runtime wrappers, and preprocessing.
+  Our bridge bypasses AOTAutograd and compiles forward inference only.
+  These timings alone cannot attribute the difference to any one layer.
+  Small kernels, reductions, and backend-specific implementations can be
+  slower than eager. Use the table above as the result for this machine.
